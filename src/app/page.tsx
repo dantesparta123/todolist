@@ -7,6 +7,8 @@ import TodoItem from '@/components/TodoItem';
 import AddTodo from '@/components/AddTodo';
 import EmptyState from '@/components/EmptyState';
 import LoadingSpinner from '@/components/LoadingSpinner';
+import FloatingImportExport from '@/components/FloatingImportExport';
+import StatisticsDashboard from '@/components/StatisticsDashboard';
 import { CheckCircle, Clock } from 'lucide-react';
 
 export default function Home() {
@@ -67,29 +69,29 @@ export default function Home() {
   }
 
   return (
-    <div className="min-h-screen bg-gray-50 py-8">
+    <div className="min-h-screen bg-gray-50 py-4 sm:py-8">
       <div className="max-w-2xl mx-auto px-4">
         {/* 头部 */}
-        <div className="text-center mb-8">
-          <h1 className="text-3xl font-bold text-gray-900 mb-2">任务清单</h1>
-          <p className="text-gray-600">管理您的日常任务，提高工作效率</p>
+        <div className="text-center mb-6 sm:mb-8">
+          <h1 className="text-2xl sm:text-3xl font-bold text-gray-900 mb-2">任务清单</h1>
+          <p className="text-sm sm:text-base text-gray-600">管理您的日常任务，提高工作效率</p>
         </div>
 
         {/* 统计信息 */}
         {totalCount > 0 && (
           <div className="bg-white rounded-lg shadow-sm border p-4 mb-6">
-            <div className="flex items-center justify-between">
-              <div className="flex items-center gap-4">
-                <div className="flex items-center gap-2 text-gray-600">
+            <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-3 sm:gap-0">
+              <div className="flex items-center justify-between sm:justify-start gap-4">
+                <div className="flex items-center gap-2 text-gray-600 text-sm sm:text-base">
                   <Clock className="w-4 h-4" />
                   <span>总任务: {totalCount}</span>
                 </div>
-                <div className="flex items-center gap-2 text-green-600">
+                <div className="flex items-center gap-2 text-green-600 text-sm sm:text-base">
                   <CheckCircle className="w-4 h-4" />
                   <span>已完成: {completedCount}</span>
                 </div>
               </div>
-              <div className="text-sm text-gray-500">
+              <div className="text-sm text-gray-500 text-center sm:text-right">
                 {totalCount > 0 ? `${Math.round((completedCount / totalCount) * 100)}%` : '0%'} 完成
               </div>
             </div>
@@ -107,13 +109,13 @@ export default function Home() {
         <AddTodo onAdd={handleAddTodo} />
 
         {/* 任务列表 */}
-        <div className="mt-6">
+        <div className="mt-4 sm:mt-6">
           {isLoading ? (
             <LoadingSpinner />
           ) : todos.length === 0 ? (
             <EmptyState />
           ) : (
-            <div className="space-y-3">
+            <div className="space-y-2 sm:space-y-3">
               {todos.map(todo => (
                 <TodoItem
                   key={todo.id}
@@ -126,6 +128,12 @@ export default function Home() {
           )}
         </div>
       </div>
+
+      {/* 浮动统计看板按钮 */}
+      <StatisticsDashboard todos={todos} />
+      
+      {/* 浮动导入导出按钮 */}
+      <FloatingImportExport todos={todos} onImportSuccess={loadTodos} />
     </div>
   );
 }

@@ -68,7 +68,7 @@ export default function TodoItem({ todo, onUpdate, onDelete }: TodoItemProps) {
   };
 
   return (
-    <div className={`bg-white rounded-lg shadow-sm border p-4 transition-all ${
+    <div className={`bg-white rounded-lg shadow-sm border p-3 sm:p-4 transition-all ${
       todo.completed ? 'opacity-75' : ''
     }`}>
       <div className="flex items-start gap-3">
@@ -91,21 +91,21 @@ export default function TodoItem({ todo, onUpdate, onDelete }: TodoItemProps) {
                 type="text"
                 value={editTitle}
                 onChange={(e) => setEditTitle(e.target.value)}
-                className="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500"
+                className="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-blue-500 text-gray-900 placeholder-gray-500 text-sm sm:text-base"
                 placeholder="任务标题"
               />
               <textarea
                 value={editDescription}
                 onChange={(e) => setEditDescription(e.target.value)}
-                className="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500 resize-none"
+                className="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-blue-500 resize-none text-gray-900 placeholder-gray-500 text-sm sm:text-base"
                 placeholder="任务描述（可选）"
                 rows={2}
               />
-              <div className="flex gap-2">
+              <div className="flex flex-col sm:flex-row gap-2">
                 <button
                   onClick={handleSave}
                   disabled={isLoading || !editTitle.trim()}
-                  className="flex items-center gap-1 px-3 py-1 bg-blue-500 text-white rounded-md hover:bg-blue-600 disabled:opacity-50"
+                  className="flex items-center justify-center gap-1 px-3 py-2 bg-blue-500 text-white rounded-md hover:bg-blue-600 disabled:opacity-50 disabled:cursor-not-allowed transition-colors text-sm"
                 >
                   <Save className="w-4 h-4" />
                   保存
@@ -113,7 +113,7 @@ export default function TodoItem({ todo, onUpdate, onDelete }: TodoItemProps) {
                 <button
                   onClick={handleCancel}
                   disabled={isLoading}
-                  className="flex items-center gap-1 px-3 py-1 bg-gray-500 text-white rounded-md hover:bg-gray-600"
+                  className="flex items-center justify-center gap-1 px-3 py-2 bg-gray-500 text-white rounded-md hover:bg-gray-600 disabled:opacity-50 disabled:cursor-not-allowed transition-colors text-sm"
                 >
                   <X className="w-4 h-4" />
                   取消
@@ -122,13 +122,13 @@ export default function TodoItem({ todo, onUpdate, onDelete }: TodoItemProps) {
             </div>
           ) : (
             <div>
-              <h3 className={`font-medium text-gray-900 ${
+              <h3 className={`font-medium text-gray-900 text-sm sm:text-base ${
                 todo.completed ? 'line-through text-gray-500' : ''
               }`}>
                 {todo.title}
               </h3>
               {todo.description && (
-                <p className={`mt-1 text-sm text-gray-600 ${
+                <p className={`mt-1 text-xs sm:text-sm text-gray-600 ${
                   todo.completed ? 'line-through' : ''
                 }`}>
                   {todo.description}
@@ -142,7 +142,7 @@ export default function TodoItem({ todo, onUpdate, onDelete }: TodoItemProps) {
         </div>
 
         {!isEditing && (
-          <div className="flex gap-1">
+          <div className="flex gap-1 flex-shrink-0">
             <button
               onClick={() => setIsEditing(true)}
               disabled={isLoading}

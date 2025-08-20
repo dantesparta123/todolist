@@ -12,6 +12,9 @@
 - 🎨 **现代UI**: 简洁美观的用户界面
 - 🔄 **错误处理**: 完善的错误处理和重试机制
 - 📅 **时间排序**: 任务按创建时间自动排序
+- 📤 **数据导入导出**: 支持CSV文件导入导出，方便数据备份和迁移
+- 📊 **数据统计看板**: 可视化任务完成率、分布图表和趋势分析
+- 🤖 **AI智能生成**: 根据任务标题自动生成任务描述，支持流式输出
 
 ## 🛠️ 技术栈
 
@@ -19,8 +22,10 @@
 - **开发语言**: TypeScript
 - **样式框架**: Tailwind CSS
 - **数据库**: Supabase (PostgreSQL)
+- **图表库**: Recharts
 - **图标库**: Lucide React
 - **日期处理**: date-fns
+- **AI服务**: HuggingFace OpenAI API (Qwen2.5-VL-7B-Instruct)
 - **工具库**: clsx
 
 ## 🚀 快速开始
@@ -45,7 +50,20 @@ npm install
 yarn install
 ```
 
-### 3. 配置数据库
+### 3. 配置环境变量
+
+在项目根目录创建 `.env.local` 文件：
+
+```env
+# Supabase 配置
+NEXT_PUBLIC_SUPABASE_URL=your_supabase_url_here
+NEXT_PUBLIC_SUPABASE_ANON_KEY=your_supabase_anon_key_here
+
+# HuggingFace API 配置
+HF_TOKEN=your_huggingface_token_here
+```
+
+### 4. 配置数据库
 
 #### 使用 Supabase (推荐)
 
@@ -53,16 +71,15 @@ yarn install
 2. 在项目设置中获取以下信息：
    - Project URL
    - Anon/Public Key
-3. 在项目根目录创建 `.env.local` 文件：
+3. 在 Supabase SQL Editor 中执行 `supabase-setup.sql` 文件内容
 
-```env
-NEXT_PUBLIC_SUPABASE_URL=your_supabase_url_here
-NEXT_PUBLIC_SUPABASE_ANON_KEY=your_supabase_anon_key_here
-```
+### 5. 获取 HuggingFace API Token
 
-4. 在 Supabase SQL Editor 中执行 `supabase-setup.sql` 文件内容
+1. 访问 [HuggingFace](https://huggingface.co/settings/tokens) 创建账户
+2. 在设置中创建新的 Access Token
+3. 将 Token 添加到 `.env.local` 文件中
 
-### 4. 启动开发服务器
+### 6. 启动开发服务器
 
 ```bash
 npm run dev
@@ -78,18 +95,28 @@ yarn dev
 todolist/
 ├── src/
 │   ├── app/
-│   │   └── page.tsx          # 主页面
+│   │   ├── api/
+│   │   │   └── generate-description/
+│   │   │       └── route.ts        # AI描述生成API
+│   │   ├── favicon.ico
+│   │   ├── globals.css
+│   │   ├── layout.tsx
+│   │   └── page.tsx                # 主页面
 │   ├── components/
-│   │   ├── AddTodo.tsx       # 添加任务组件
-│   │   ├── TodoItem.tsx      # 任务项组件
-│   │   ├── EmptyState.tsx    # 空状态组件
-│   │   └── LoadingSpinner.tsx # 加载状态组件
+│   │   ├── AddTodo.tsx             # 添加任务组件
+│   │   ├── TodoItem.tsx            # 任务项组件
+│   │   ├── EmptyState.tsx          # 空状态组件
+│   │   ├── LoadingSpinner.tsx      # 加载状态组件
+│   │   ├── FloatingImportExport.tsx # 浮动数据导入导出组件
+│   │   └── StatisticsDashboard.tsx # 数据统计看板组件
 │   ├── lib/
-│   │   ├── supabase.ts       # Supabase客户端配置
-│   │   └── todo.ts           # 任务数据操作函数
+│   │   ├── supabase.ts             # Supabase客户端配置
+│   │   └── todo.ts                 # 任务数据操作函数
 │   └── types/
-│       └── todo.ts           # TypeScript类型定义
-├── supabase-setup.sql        # 数据库初始化脚本
+│       └── todo.ts                 # TypeScript类型定义
+├── public/                         # 静态资源
+├── supabase-setup.sql              # 数据库初始化脚本
+├── sample-todos.csv                # 示例数据文件
 ├── package.json
 └── README.md
 ```
@@ -106,6 +133,35 @@ todolist/
 - 所有操作都会实时同步到数据库
 - 支持离线操作，网络恢复后自动同步
 - 完善的错误处理和重试机制
+
+### 数据导入导出
+- **浮动按钮**: 右下角蓝色浮动按钮，点击打开导入导出功能
+- **导出功能**: 将当前所有任务导出为CSV格式文件
+- **导入功能**: 支持拖拽或点击选择CSV/Excel文件批量导入任务
+- **模态框界面**: 弹窗式界面，不占用主界面空间
+- **拖拽上传**: 直观的拖拽区域，支持文件拖拽上传
+- **格式验证**: 自动验证导入文件格式和数据有效性
+- **错误提示**: 详细的错误信息和导入结果反馈
+- **示例文件**: 提供 `sample-todos.csv` 作为导入格式参考
+
+### 数据统计看板
+- **浮动按钮**: 右下角紫色浮动按钮，位于导入导出按钮上方
+- **概览统计**: 总任务数、已完成、未完成、完成率等关键指标
+- **状态分布**: 饼图和柱状图展示任务完成状态分布
+- **本周趋势**: 折线图显示本周每日任务创建和完成情况
+- **本月趋势**: 柱状图显示本月每周任务统计
+- **实时更新**: 数据实时计算，反映最新任务状态
+- **响应式设计**: 适配不同屏幕尺寸，移动端友好
+
+### AI智能生成
+- **智能描述**: 根据任务标题自动生成任务描述
+- **字数控制**: 可自定义生成描述的字数限制（5-100字）
+- **流式输出**: 支持逐字显示生成过程，提供更好的用户体验
+- **一键生成**: 点击AI生成按钮即可快速生成描述
+- **实时反馈**: 生成过程中显示加载状态
+- **AI模型**: 使用Qwen2.5-VL-7B-Instruct模型生成高质量描述
+- **中文优化**: 使用中文提示词，生成符合中文习惯的描述
+- **提示词驱动**: 通过精心设计的提示词确保生成质量
 
 ### 用户体验
 - 响应式设计，支持各种屏幕尺寸
@@ -135,7 +191,10 @@ npm run lint
 
 1. 将代码推送到 GitHub
 2. 在 [Vercel](https://vercel.com) 导入项目
-3. 配置环境变量
+3. 配置环境变量：
+   - `NEXT_PUBLIC_SUPABASE_URL`
+   - `NEXT_PUBLIC_SUPABASE_ANON_KEY`
+   - `HF_TOKEN`
 4. 自动部署完成
 
 ### 其他平台
@@ -144,6 +203,26 @@ npm run lint
 - Netlify
 - Railway
 - DigitalOcean App Platform
+
+## 🔧 技术细节
+
+### AI服务配置
+- 使用 HuggingFace OpenAI API 兼容接口
+- 模型：Qwen/Qwen2.5-VL-7B-Instruct:hyperbolic
+- 支持流式输出，提供更好的用户体验
+- 自动文本清理和格式化
+
+### 数据库设计
+- 使用 Supabase PostgreSQL
+- 表结构：todos (id, title, description, completed, created_at, updated_at)
+- 自动时间戳管理
+- 实时数据同步
+
+### 前端架构
+- Next.js 15 App Router
+- TypeScript 类型安全
+- Tailwind CSS 响应式设计
+- Recharts 数据可视化
 
 ## 🤝 贡献
 
